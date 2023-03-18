@@ -27,7 +27,7 @@ id					INT PRIMARY KEY IDENTITY(1,1),
 numeroConsulta		INT NOT NULL,
 datatempo			DATETIME NOT NULL,
 affirmative			BIT NOT NULL,
-observation			VARCHAR(450) NOT NULL,
+observation			TEXT,
 FOREIGN KEY (id) REFERENCES Client(id),
 FOREIGN KEY (id) REFERENCES Team(id),
 ); 
@@ -37,9 +37,8 @@ id				INT PRIMARY KEY IDENTITY(1,1),
 numeroFactura	INT NOT NULL,
 descricao		VARCHAR(250) NOT NULL,
 valor			INT NOT NULL,
-estadoPagamento VARCHAR(250) NOT NULL,
-FOREIGN KEY (ConsultaID) REFERENCES Consulta(ConsultaID),
-FOREIGN KEY (ClientID) REFERENCES Client(ClientID),
+estadoPagamento BIT NOT NULL,
+FOREIGN KEY (id) REFERENCES Consulta(id),
 );
 
 SELECT *
@@ -51,12 +50,20 @@ FROM Client;
 SELECT *
 FROM Consulta;
 
+SELECT *
+FROM Factura;
+
 EXEC sp_rename 'Consulta', 'ConsultaAntiga';
+
+EXEC sp_rename 'Team.id', 'TeamID';
+
+EXEC sp_rename 'Client.id', 'ClientID';
 
 SELECT *
 FROM Factura;
 
 DELETE Team;
+
 
 
 

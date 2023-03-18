@@ -12,5 +12,6 @@ namespace ClinicaDentariaProjeto.Data
     }
         public DbSet<Team> Teams { get; set; } = default!;
         public DbSet<Client> Clients { get; set; } = default!;
+        public DbSet<Consulta> Consultas { get; set; } = default!;
     }
 }
