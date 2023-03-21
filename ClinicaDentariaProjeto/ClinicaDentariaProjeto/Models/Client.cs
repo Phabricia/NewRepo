@@ -1,4 +1,6 @@
-﻿namespace ClinicaDentariaProjeto.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace ClinicaDentariaProjeto.Models
 {
     public class Client
     {
@@ -7,6 +9,7 @@
         public DateTime Birthday { get; set; }
         public string? Address { get; set; }
         public int NIF { get; set; }
+        [Display(Name = "Health Care")]
         public int HealthCare { get; set; }
     }
 }
