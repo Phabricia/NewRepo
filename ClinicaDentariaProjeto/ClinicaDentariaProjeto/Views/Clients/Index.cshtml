@@ -1,31 +1,61 @@
-﻿@model IEnumerable<ClinicaDentariaProjeto.Models.Client>
+﻿@using ClinicaDentariaProjeto.lib;
+@using Microsoft.AspNetCore.Mvc.Localization;
+@*@model IEnumerable<ClinicaDentariaProjeto.Models.Client>
+*@
+@model PaginatedList<ClinicaDentariaProjeto.Models.Client>
 
+@inject IHtmlLocalizer<Resource> SharedLocalizer
 @{
     ViewData["Title"] = "Index";
+    var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.HasNextPage ? "disabled" : "";
 }
 
-<h1>Index</h1>
+<h1>@SharedLocalizer["Client"]</h1>
 
 <p>
-    <a asp-action="Create">Create New Client</a>
+    <a asp-action="Create">@SharedLocalizer["Create New Client"]</a>
 </p>
+
+<form asp-action="Index" method="get">
+    <div class="form-actions no-color">
+        <p>
+            @SharedLocalizer["Find by name"]:
+            <input type="text" name="searchName" value="@ViewData["SearchName"]" />
+            <input type="submit" value="@SharedLocalizer["Search"]" class="btn btn-primary" /> |
+            <a asp-action="Index">@SharedLocalizer["Return to Full List"]</a>
+        </p>
+    </div>
+
+</form>
+
 <table class="table">
     <thead>
         <tr>
+            
             <th>
-                @Html.DisplayNameFor(model => model.Name)
+                <a asp-action="Index" asp-route-sort="@ViewData["NameSort"]"
+                   asp-route-searchName="@ViewData["SearchName"]"> @Html.DisplayNameFor(model => model.First().Name)</a>
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Birthday)
+                <a asp-action="Index" asp-route-sort="@ViewData["BirthdaySort"]"
+                   asp-route-searchName="@ViewData["SearchName"]"> @Html.DisplayNameFor(model => model.First().Birthday)</a>
+                
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Address)
+                <a asp-action="Index" asp-route-sort="@ViewData["AddressSort"]"
+                   asp-route-searchName="@ViewData["SearchName"]"> @Html.DisplayNameFor(model => model.First().Address)</a>
+               
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.NIF)
+                <a asp-action="Index" asp-route-sort="@ViewData["NIFSort"]"
+                   asp-route-searchName="@ViewData["SearchName"]"> @Html.DisplayNameFor(model => model.First().NIF)</a>
+               
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.HealthCare)
+                <a asp-action="Index" asp-route-sort="@ViewData["HealthCareSort"]"
+                   asp-route-searchName="@ViewData["SearchName"]"> @Html.DisplayNameFor(model => model.First().HealthCare)</a>
+               
             </th>
             <th></th>
         </tr>
@@ -49,11 +79,52 @@
                 @Html.DisplayFor(modelItem => item.HealthCare)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.ID">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.ID">Delete</a>
+                <a asp-action="Edit" asp-route-id="@item.ID">@SharedLocalizer["Edit"]</a> |
+                    <a asp-action="Details" asp-route-id="@item.ID">@SharedLocalizer["Details"]</a> |
+                    <a asp-action="Delete" asp-route-id="@item.ID">@SharedLocalizer["Delete"]</a>
             </td>
         </tr>
 }
     </tbody>
 </table>
+
+<nav aria-label="Page navigation example">
+    <ul class="pagination">
+        <li class="page-item @prevDisabled">
+            <a asp-action="Index"
+               asp-route-pageNumber="@(Model.PageIndex - 1)"
+               asp-route-searchName="@ViewData["SearchName"]"
+               class="page-link">@SharedLocalizer["Previous"]</a>
+        </li>
+
+        @for (int i = 0; i < Model.TotalPages; i++)
+        {
+                <li class="page-item">
+                    <a asp-action="Index" asp-route-pageNumber="@(i+1)" class="page-link">@(i + 1)</a>
+                </li>
+        }
+
+        <li class="page-item @nextDisabled">
+            <a asp-action="Index"
+               asp-route-pageNumber="@(Model.PageIndex + 1)"
+               asp-route-searchName="@ViewData["SearchName"]"
+               class="page-link">@SharedLocalizer["Next"]</a>
+        </li>
+    </ul>
+</nav>
+
+@(
+Html
+    .Grid(Model)
+    .Build(columns =>
+    {
+        columns.Add(Model => Model.Name).Titled(SharedLocalizer["Name"]);
+        columns.Add(Model => Model.Birthday).Titled(SharedLocalizer["Birthday"]);
+        columns.Add(Model => Model.Address).Titled(SharedLocalizer["Address"]);
+        columns.Add(Model => Model.NIF).Titled(SharedLocalizer["NIF"]);
+        columns.Add(Model => Model.HealthCare).Titled(SharedLocalizer["HealthCare"]); ;
+    })
+    .Filterable(GridFilterCase.Lower)
+    .Using(GridFilterMode.Header)
+)
+

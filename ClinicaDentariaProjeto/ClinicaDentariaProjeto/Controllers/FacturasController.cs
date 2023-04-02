@@ -7,9 +7,12 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ClinicaDentariaProjeto.Data;
 using ClinicaDentariaProjeto.Models;
+using Microsoft.AspNetCore.Authorization;
+using ClinicaDentariaProjeto.lib;
 
 namespace ClinicaDentariaProjeto.Controllers
 {
+    [Authorize]
     public class FacturasController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -20,8 +23,67 @@ namespace ClinicaDentariaProjeto.Controllers
         }
 
         // GET: Facturas
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string sort, string searchName, int? pageNumber)
         {
+            if (_context.Facturas == null)
+            {
+                return Problem("Entity set 'ApplicationDbContext.Client'  is null.");
+            }
+
+            ViewData["SearchName"] = searchName;
+            ViewData["PageNumber"] = pageNumber ?? 1;
+
+
+            IQueryable<Factura> facturasSql = _context.Facturas;
+
+            if (!string.IsNullOrEmpty(searchName))
+            {
+                facturasSql = ((IQueryable<Factura>)_context.Facturas).Where(c => c.NumberFactura.ToString().Contains(searchName) || c.Description.ToString().Contains(searchName) || c.PriceFactura.ToString().Contains(searchName) || c.PaymentConfirme.ToString().Contains(searchName));
+            }
+
+            switch (sort)
+            {
+                case "number_desc":
+                    facturasSql = facturasSql.OrderByDescending(x => x.NumberFactura);
+                    break;
+                case "number_asc":
+                    facturasSql = facturasSql.OrderBy(x => x.NumberFactura);
+                    break;
+                case "description_desc":
+                    facturasSql = facturasSql.OrderByDescending(x => x.Description);
+                    break;
+                case "description_asc":
+                    facturasSql = facturasSql.OrderBy(x => x.Description);
+                    break;
+
+                case "pricefactura_asc":
+                    facturasSql = facturasSql.OrderBy(x => x.PriceFactura);
+                    break;
+                case "pricefactura_desc":
+                    facturasSql = facturasSql.OrderByDescending(x => x.PriceFactura);
+                    break;
+
+                case "paymentconfirme_asc":
+                    facturasSql = facturasSql.OrderBy(x => x.PaymentConfirme);
+                    break;
+                case "paymentconfirme_desc":
+                    facturasSql = facturasSql.OrderByDescending(x => x.PaymentConfirme);
+                    break;
+            }
+
+            ViewData["NumberSort"] = (sort == "number_desc") ? "number_asc" : "number_desc";
+            ViewData["DescriptionSort"] = (sort == "description_desc") ? "description_asc" : "description_desc";
+            ViewData["PriceFacturaSort"] = (sort == "pricefactura_desc") ? "pricefactura_asc" : "pricefactura_desc";
+            ViewData["PaymentConfirmeSort"] = (sort == "paymentconfirme_desc") ? "paymentconfirme_asc" : "paymentconfirme_desc";
+
+
+
+            int pageSize = 3;
+
+            var items = await PaginatedList<Factura>.CreateAsync(facturasSql, pageNumber ?? 1, pageSize);
+
+            return View(items);
+
             var applicationDbContext = _context.Facturas.Include(f => f.Consulta);
             return View(await applicationDbContext.ToListAsync());
         }
@@ -48,6 +110,7 @@ namespace ClinicaDentariaProjeto.Controllers
         // GET: Facturas/Create
         public IActionResult Create()
         {
+            //ViewData["ConsultaID"] = new SelectList(_context.Consultas, "ID", "ID");
             ViewData["ConsultaID"] = new SelectList(_context.Consultas, "ID", "ID");
             return View();
         }

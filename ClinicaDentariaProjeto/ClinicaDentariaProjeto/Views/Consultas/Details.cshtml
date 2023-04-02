@@ -1,5 +1,6 @@
 ﻿@model ClinicaDentariaProjeto.Models.Consulta
 
+@inject IHtmlLocalizer<Resource> SharedLocalizer
 @{
     ViewData["Title"] = "Details";
 }
@@ -35,16 +36,18 @@
             @Html.DisplayFor(model => model.Observation)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Client)
+            @Html.DisplayNameFor(model => model.Client.Name)
+            @SharedLocalizer["from patient"]
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Client.ID)
+            @Html.DisplayFor(model => model.Client.Name)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Team)
+            @Html.DisplayNameFor(model => model.Team.Name)
+            @SharedLocalizer["from doctor"]
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Team.ID)
+            @Html.DisplayFor(model => model.Team.Name)
         </dd>
     </dl>
 </div>

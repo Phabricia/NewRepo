@@ -7,9 +7,12 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ClinicaDentariaProjeto.Data;
 using ClinicaDentariaProjeto.Models;
+using Microsoft.AspNetCore.Authorization;
+using ClinicaDentariaProjeto.lib;
 
 namespace ClinicaDentariaProjeto.Controllers
 {
+    [Authorize]
     public class ClientsController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -20,11 +23,94 @@ namespace ClinicaDentariaProjeto.Controllers
         }
 
         // GET: Clients
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string sort, string searchName, int? pageNumber)
         {
+            ViewData["SearchName"] = searchName;
+
+            var clientSql = from i in _context.Clients select i;
+
+            if (!string.IsNullOrEmpty(searchName))
+            {
+                clientSql=clientSql.Where(i => i.Name.Contains(searchName));
+            }
+
+            switch (sort)
+            {
+                case "name_desc":
+                    clientSql = clientSql.OrderByDescending(x => x.Name);
+                    break;
+                case "name_asc":
+                    clientSql = clientSql.OrderBy(x => x.Name);
+                    break;
+                case "birthday_desc":
+                    clientSql = clientSql.OrderByDescending(x => x.Birthday);
+                    break;
+                case "birthday_asc":
+                    clientSql = clientSql.OrderBy(x => x.Birthday);
+                    break;
+
+                case "address_asc":
+                    clientSql = clientSql.OrderBy(x => x.Address);
+                    break;
+                case "address_desc":
+                    clientSql = clientSql.OrderByDescending(x => x.Address);
+                    break;
+
+                case "healthcare_asc":
+                    clientSql = clientSql.OrderBy(x => x.HealthCare);
+                    break;
+                case "healthcare_desc":
+                    clientSql = clientSql.OrderByDescending(x => x.HealthCare);
+                    break;
+            }
+
+            if (sort == "name_desc")
+            {
+                ViewData["NameSort"] = "name_asc";
+            }
+            else
+            {
+                ViewData["NameSort"] = "name_desc";
+            }
+
+            if (sort == "birthday_desc")
+            {
+                ViewData["BirthdaySort"] = "birthday_asc";
+            }
+            else
+            {
+                ViewData["BirthdaySort"] = "birthday_desc";
+            }
+
+            if (sort == "address_desc")
+            {
+                ViewData["AddressSort"] = "address_asc";
+            }
+            else
+            {
+                ViewData["AddressSort"] = "address_desc";
+            }
+
+            if (sort == "healthcare_desc")
+            {
+                ViewData["HealthCareSort"] = "healthcare_asc";
+            }
+            else
+            {
+                ViewData["HealthCareSort"] = "healthcare_desc";
+            }
+
+            int pageSize = 5;
+
+            var items = await PaginatedList<Client>.CreateAsync(clientSql, pageNumber ?? 1, pageSize);
+
+            return View(items);
+        
+
               return _context.Clients != null ? 
                           View(await _context.Clients.ToListAsync()) :
                           Problem("Entity set 'ApplicationDbContext.Clients'  is null.");
+     
         }
 
         // GET: Clients/Details/5

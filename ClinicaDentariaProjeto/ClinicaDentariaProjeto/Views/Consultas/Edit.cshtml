@@ -1,4 +1,8 @@
-﻿@model ClinicaDentariaProjeto.Models.Consulta
+﻿@using Microsoft.AspNetCore.Mvc.Localization;
+@model ClinicaDentariaProjeto.Models.Consulta
+
+@inject IHtmlLocalizer<Resource> SharedLocalizer
+
 
 @{
     ViewData["Title"] = "Edit";

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc.Localization;
+using System.ComponentModel.DataAnnotations;
 
 namespace ClinicaDentariaProjeto.Models
 {
@@ -9,7 +10,9 @@ namespace ClinicaDentariaProjeto.Models
         public int NumberConsulta { get; set; }
         [Display(Name = "Day and Time")]
         public DateTime DayTime { get; set; }
+        [Display(Name = "Affirmative")]
         public bool Affirmative { get; set; }
+        [Display(Name = "Observation")]
         public string? Observation { get; set; }
 
         //Foreign Key

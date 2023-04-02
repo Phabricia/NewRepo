@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using ClinicaDentariaProjeto.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace ClinicaDentariaProjeto.lib
 {
@@ -27,6 +28,11 @@ namespace ClinicaDentariaProjeto.lib
             var count = await source.CountAsync();
             var items = await source.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToListAsync();
             return new PaginatedList<T>(items, count, pageIndex, pageSize);
+        }
+
+        internal static Task CreateAsync(IQueryable<Client> clientSql, object value, int pageSize)
+        {
+            throw new NotImplementedException();
         }
     }
 }

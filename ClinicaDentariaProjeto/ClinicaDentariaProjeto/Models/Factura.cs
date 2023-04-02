@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc.Localization;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ClinicaDentariaProjeto.Models
@@ -9,6 +10,7 @@ namespace ClinicaDentariaProjeto.Models
 
         [Display(Name = "Number")]
         public int NumberFactura { get; set; }
+        [Display(Name = "Description")]
         public string? Description { get; set; }
         [Display(Name = "Price")]
         public float PriceFactura { get; set; }
@@ -19,5 +21,6 @@ namespace ClinicaDentariaProjeto.Models
         [Display(Name = "Appointment Reference")]
         public int ConsultaID { get; set; }
         public Consulta? Consulta { get; set; }
+        
     }
 }
